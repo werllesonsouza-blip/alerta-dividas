@@ -261,3 +261,80 @@ $("repeatDaily").checked = Boolean(settings.repeatDaily);
 updateNotificationStatus();
 render();
 checkDueReminders();
+
+
+// Backup local: exporta contas e preferências em um arquivo JSON.
+$("exportBackup").addEventListener("click", () => {
+  try {
+    const backup = {
+      app: "Alerta Dívidas",
+      formatVersion: 1,
+      exportedAt: new Date().toISOString(),
+      debts,
+      settings
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const date = todayISO();
+    link.href = url;
+    link.download = `alerta-dividas-backup-${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    $("backupStatus").textContent = "Backup criado. Confira a pasta Downloads do seu celular e guarde o arquivo em local seguro.";
+    showToast("Backup baixado com sucesso.");
+  } catch {
+    $("backupStatus").textContent = "Não foi possível criar o backup neste navegador. Tente novamente.";
+    showToast("Não foi possível criar o backup.");
+  }
+});
+
+$("importBackup").addEventListener("change", async (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  try {
+    const raw = await file.text();
+    const backup = JSON.parse(raw);
+    const validDebts = Array.isArray(backup.debts) && backup.debts.every(d =>
+      d && typeof d.id === "string" &&
+      typeof d.name === "string" &&
+      Number.isFinite(Number(d.amount)) &&
+      typeof d.date === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(d.date) &&
+      typeof d.paid === "boolean"
+    );
+    const validSettings = backup.settings && typeof backup.settings === "object" &&
+      ["0", "1", "3", "7"].includes(String(backup.settings.days)) &&
+      /^\d{2}:\d{2}$/.test(String(backup.settings.time));
+    if (backup.app !== "Alerta Dívidas" || backup.formatVersion !== 1 || !validDebts || !validSettings) {
+      throw new Error("Formato inválido");
+    }
+    if (!confirm(`Restaurar ${backup.debts.length} conta(s)? Isso substituirá as contas e preferências atualmente salvas neste navegador.`)) {
+      event.target.value = "";
+      return;
+    }
+    debts = backup.debts;
+    settings = {
+      days: String(backup.settings.days),
+      time: String(backup.settings.time),
+      repeatDaily: Boolean(backup.settings.repeatDaily)
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(debts));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    $("reminderDays").value = settings.days;
+    $("reminderTime").value = settings.time;
+    $("repeatDaily").checked = settings.repeatDaily;
+    render();
+    updateNotificationStatus();
+    $("backupStatus").textContent = `Backup restaurado: ${debts.length} conta(s). Confira a lista e os totais.`;
+    showToast("Backup restaurado com sucesso.");
+  } catch {
+    $("backupStatus").textContent = "Não foi possível restaurar. Escolha um arquivo de backup válido do Alerta Dívidas.";
+    showToast("Arquivo inválido ou não foi possível ler.");
+  } finally {
+    event.target.value = "";
+  }
+});
+

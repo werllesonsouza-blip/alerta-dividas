@@ -81,3 +81,14 @@ footer { text-align: center; color: #8a96a6; font-size: 11px; padding: 24px 0 4p
 .toast { position: fixed; left: 16px; right: 16px; bottom: 20px; max-width: 500px; margin: auto; padding: 13px 16px; border-radius: 13px; background: #10233f; color: white; box-shadow: 0 10px 35px #0002; font-size: 13px; opacity: 0; transform: translateY(15px); pointer-events: none; transition: .2s ease; z-index: 5; }
 .toast.show { opacity: 1; transform: translateY(0); }
 @media (min-width: 600px) { .container { padding-top: 28px; } .hero { padding: 28px; } .panel { padding: 21px; } }
+
+
+/* Botão visual para selecionar o arquivo de backup no celular. */
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 10px;
+}
