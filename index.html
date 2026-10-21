@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10233f">
+  <meta name="description" content="Organize suas contas, acompanhe vencimentos e evite esquecer pagamentos.">
+  <title>Alerta Dívidas</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">AD</div>
+    <div class="brand-copy">
+      <strong>Alerta Dívidas</strong>
+      <span>Seu dinheiro sob controle</span>
+    </div>
+    <button id="installBtn" class="icon-button hidden" aria-label="Instalar aplicativo" title="Instalar">＋</button>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">RESUMO FINANCEIRO</p>
+      <div class="total-line">
+        <div>
+          <span class="muted-light">Total pendente</span>
+          <h1 id="totalPending">R$ 0,00</h1>
+        </div>
+        <span class="hero-icon" aria-hidden="true">↗</span>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span>Em atraso</span>
+          <strong id="overdueCount">0</strong>
+        </div>
+        <div class="summary-card">
+          <span>Próximas</span>
+          <strong id="upcomingCount">0</strong>
+        </div>
+        <div class="summary-card">
+          <span>Pagas</span>
+          <strong id="paidCount">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">ORGANIZAÇÃO</p>
+          <h2 id="formHeading">Adicionar uma conta</h2>
+        </div>
+      </div>
+      <form id="debtForm" class="panel">
+        <input id="debtId" type="hidden">
+        <label for="debtName">Nome da conta</label>
+        <input id="debtName" type="text" maxlength="70" placeholder="Ex.: Cartão de crédito" required>
+        <div class="form-row">
+          <div>
+            <label for="debtAmount">Valor (R$)</label>
+            <input id="debtAmount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="250,00" required>
+          </div>
+          <div>
+            <label for="debtDate">Vencimento</label>
+            <input id="debtDate" type="date" required>
+          </div>
+        </div>
+        <label for="debtNotes">Observação (opcional)</label>
+        <input id="debtNotes" type="text" maxlength="120" placeholder="Ex.: pagar pelo aplicativo do banco">
+        <div class="button-row">
+          <button id="saveBtn" class="primary-button" type="submit">＋ Adicionar conta</button>
+          <button id="cancelEditBtn" class="secondary-button hidden" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="section">
+      <div class="section-heading list-heading">
+        <div>
+          <p class="eyebrow">ACOMPANHAMENTO</p>
+          <h2>Minhas contas</h2>
+        </div>
+        <select id="filterSelect" aria-label="Filtrar contas">
+          <option value="pending">Pendentes</option>
+          <option value="overdue">Atrasadas</option>
+          <option value="paid">Pagas</option>
+          <option value="all">Todas</option>
+        </select>
+      </div>
+      <div id="debtList" class="debt-list"></div>
+      <p id="emptyState" class="empty-state">Nenhuma conta por aqui. Cadastre sua primeira conta acima.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LEMBRETES</p>
+          <h2>Configurar alertas</h2>
+        </div>
+      </div>
+      <div class="panel settings-panel">
+        <label class="setting-label" for="reminderDays">Avisar com antecedência</label>
+        <select id="reminderDays">
+          <option value="0">No dia do vencimento</option>
+          <option value="1" selected>1 dia antes</option>
+          <option value="3">3 dias antes</option>
+          <option value="7">7 dias antes</option>
+        </select>
+        <label class="setting-label" for="reminderTime">Horário preferido</label>
+        <select id="reminderTime">
+          <option value="08:00">08:00</option>
+          <option value="09:00" selected>09:00</option>
+          <option value="12:00">12:00</option>
+          <option value="18:00">18:00</option>
+        </select>
+        <label class="check-row">
+          <input id="repeatDaily" type="checkbox">
+          <span>Relembrar contas atrasadas diariamente quando eu abrir o site</span>
+        </label>
+        <button id="enableNotifications" class="secondary-button full-width" type="button">Ativar notificações deste navegador</button>
+        <p id="notificationStatus" class="small-note">Notificações dependem da permissão do navegador e do suporte do dispositivo.</p>
+      </div>
+    </section>
+
+    <section class="privacy-note">
+      <span aria-hidden="true">🔒</span>
+      <p><strong>Privacidade primeiro.</strong> Seus dados ficam armazenados neste navegador, neste dispositivo. Não há cadastro nem envio das dívidas para um servidor. Limpar os dados do navegador pode apagá-las.</p>
+    </section>
+    <footer>Alerta Dívidas · versão inicial gratuita</footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
